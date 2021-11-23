@@ -39,7 +39,9 @@ export const CryptCardList = ({ cards, filter }) => {
                   {card.amount}
                   <button onClick={() => subCardInInventory(card.id)}>-</button>
                 </td>
-                <td>{card.name}</td>
+                <td>
+                  {card.name} {card.adv ? "(ADV)" : ""}
+                </td>
                 <td>{card.capacity}</td>
                 <td>{card.disciplines}</td>
                 <th>{card.clan}</th>

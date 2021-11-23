@@ -17,6 +17,7 @@ export const getCrypt = () => {
       title: card.Title,
       banned: card.Banned !== "",
       artist: card.Artist,
+      imgName: getImageName(card),
     };
 
     return acc;
@@ -44,6 +45,7 @@ export const getLibrary = () => {
       banned: card.Banned !== "",
       artist: card.Artist,
       capacity: card.Capacity,
+      imgName: getImageName(card),
     };
 
     return acc;
@@ -72,4 +74,16 @@ const getCost = (card) => {
   if (card.ConvictionCost !== "") return { amount: card.ConvictionCost, type: "Conviction", text: `${card.ConvictionCost} Conviction` };
 
   return { amount: null, type: null, text: "" };
+};
+
+const getImageName = (card) => {
+  return (
+    card.Name.replace(/[\s,'-/."]/g, "")
+      .replace(/[áàâãÁÀÂÃ]/g, "a")
+      .replace(/[éèêÉÈÊ]/g, "e")
+      .replace(/[íìîÍÌÎ]/g, "i")
+      .replace(/[óòôõÓÒÔÕ]/g, "o")
+      .replace(/[úùûÚÙÛ]/g, "u")
+      .toLowerCase() + (card.Adv === "Advanced" ? "adv" : "")
+  );
 };
