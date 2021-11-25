@@ -3,13 +3,18 @@ import { useDatabase } from "../hooks";
 import { CardViewer } from "./CardViewer";
 
 export const LibraryCardList = ({ cards, filter }) => {
-  const { addCardInInventory, subCardInInventory, inventory } = useDatabase();
+  const { addCardToInventory, subCardFromInventory, inventory, isEditingDeck, editingCardList, addCardToCurrentDeck, subCardFromCurrentDeck } =
+    useDatabase();
 
   const cardsFiltered = useMemo(() => {
     return Object.values(cards)
       .filter((card) => card.name.toLowerCase().includes(filter.quickSearch.toLowerCase()))
-      .map((card) => ({ ...card, amount: inventory[card.id] ? inventory[card.id].amount : 0 }));
-  }, [cards, filter, inventory]);
+      .map((card) => ({
+        ...card,
+        inventoryAmount: inventory[card.id] ? inventory[card.id].amount : 0,
+        deckAmount: isEditingDeck && editingCardList[card.id] ? editingCardList[card.id].amount : 0,
+      }));
+  }, [cards, filter, inventory, isEditingDeck, editingCardList]);
 
   const [displayedCard, setDisplayedCard] = useState();
 
@@ -20,6 +25,7 @@ export const LibraryCardList = ({ cards, filter }) => {
           <thead>
             <tr>
               <th>Inventory</th>
+              {isEditingDeck && <th>Current Deck</th>}
               <th>Name</th>
               <th>Type</th>
               <th>Requires</th>
@@ -32,12 +38,19 @@ export const LibraryCardList = ({ cards, filter }) => {
           </thead>
           <tbody>
             {cardsFiltered.map((card) => (
-              <tr key={card.Id} onMouseEnter={() => setDisplayedCard(card)}>
+              <tr key={card.id} onMouseEnter={() => setDisplayedCard(card)}>
                 <td>
-                  <button onClick={() => addCardInInventory(card.id)}>+</button>
-                  {card.amount}
-                  <button onClick={() => subCardInInventory(card.id)}>-</button>
+                  <button onClick={() => addCardToInventory(card.id)}>+</button>
+                  {card.inventoryAmount}
+                  <button onClick={() => subCardFromInventory(card.id)}>-</button>
                 </td>
+                {isEditingDeck && (
+                  <td>
+                    <button onClick={() => addCardToCurrentDeck(card.id)}>+</button>
+                    {card.deckAmount}
+                    <button onClick={() => subCardFromCurrentDeck(card.id)}>-</button>
+                  </td>
+                )}
                 <td>{card.name}</td>
                 <td>{card.types}</td>
                 <td>{card.requires}</td>

@@ -5,6 +5,7 @@ export const getCrypt = () => {
     acc[card.Id] = {
       id: card.Id,
       name: card.Name,
+      displayName: getDisplayName(card),
       type: card.Type,
       clan: card.Clan,
       adv: card.Adv === "Advanced",
@@ -52,16 +53,6 @@ export const getLibrary = () => {
   }, {});
 };
 
-export const getInventory = () => new Map();
-
-export const saveInventory = () => {};
-
-export const getDecks = () => ({
-  deckOne: { name: "deckOne", deckList: {} },
-});
-
-export const saveDecks = () => {};
-
 const joinNotEmpty = (array) => {
   return array.filter((item) => item !== "").join(", ");
 };
@@ -74,6 +65,10 @@ const getCost = (card) => {
   if (card.ConvictionCost !== "") return { amount: card.ConvictionCost, type: "Conviction", text: `${card.ConvictionCost} Conviction` };
 
   return { amount: null, type: null, text: "" };
+};
+
+const getDisplayName = (card) => {
+  return card.name + (card.Adv === "Advanced" ? " (ADV)" : "");
 };
 
 const getImageName = (card) => {

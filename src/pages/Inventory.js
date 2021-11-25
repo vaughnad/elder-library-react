@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useDatabase } from "../hooks";
 
 export const Inventory = () => {
-  const { addCardInInventory, subCardInInventory, inventory, cryptCards, libraryCards } = useDatabase();
+  const { addCardToInventory, subCardFromInventory, inventory, cryptCards, libraryCards } = useDatabase();
   const [quickSearch, setQuickSearch] = useState("");
   const [showAllCards, setShowAllCards] = useState(true);
   const [showCryptCards, setShowCryptCards] = useState(true);
@@ -40,8 +40,8 @@ export const Inventory = () => {
             {filteredCryptList.map((card) => (
               <tr key={card.id}>
                 <td>
-                  <button onClick={() => addCardInInventory(card.id)}>+</button>
-                  <button onClick={() => subCardInInventory(card.id)}>-</button>
+                  <button onClick={() => addCardToInventory(card.id)}>+</button>
+                  <button onClick={() => subCardFromInventory(card.id)}>-</button>
                 </td>
                 <td>{card.amount}</td>
                 <td>{card.name}</td>
@@ -64,8 +64,8 @@ export const Inventory = () => {
             {filteredLibraryList.map((card) => (
               <tr key={card.id}>
                 <td>
-                  <button onClick={() => addCardInInventory(card.id)}>+</button>
-                  <button onClick={() => subCardInInventory(card.id)}>-</button>
+                  <button onClick={() => addCardToInventory(card.id)}>+</button>
+                  <button onClick={() => subCardFromInventory(card.id)}>-</button>
                 </td>
                 <td>{card.amount}</td>
                 <td>{card.name}</td>

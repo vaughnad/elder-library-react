@@ -1,5 +1,6 @@
 import React, { useState, createContext, useContext } from "react";
-import * as databaseService from "../services/databaseService";
+import * as DBService from "../services/localStorageDBService";
+import * as cardService from "../services/cardService";
 
 const DatabaseContext = createContext();
 
@@ -9,12 +10,20 @@ export const useDatabase = () => {
     cryptCards,
     inventory,
     setCardInInventory,
-    addCardInInventory,
-    subCardInInventory,
+    addCardToInventory,
+    subCardFromInventory,
     decks,
     saveDeck,
-    currentDeck,
-    setCurrentDeck,
+    loadDeck,
+    isEditingDeck,
+    editingCardList,
+    setEditingCardList,
+    editingCardInfo,
+    setEditingCardInfo,
+    createNewDeck,
+    setCardInCurrentDeck,
+    addCardToCurrentDeck,
+    subCardFromCurrentDeck,
   ] = useContext(DatabaseContext);
 
   return {
@@ -22,65 +31,110 @@ export const useDatabase = () => {
     cryptCards,
     inventory,
     setCardInInventory,
-    addCardInInventory,
-    subCardInInventory,
+    addCardToInventory,
+    subCardFromInventory,
     decks,
     saveDeck,
-    currentDeck,
-    setCurrentDeck,
+    loadDeck,
+    isEditingDeck,
+    editingCardList,
+    setEditingCardList,
+    editingCardInfo,
+    setEditingCardInfo,
+    createNewDeck,
+    setCardInCurrentDeck,
+    addCardToCurrentDeck,
+    subCardFromCurrentDeck,
   };
 };
 
 export const DatabaseProvider = (props) => {
-  const libraryCards = databaseService.getLibrary();
-  const cryptCards = databaseService.getCrypt();
+  const libraryCards = cardService.getLibrary();
+  const cryptCards = cardService.getCrypt();
 
-  const [inventory, setInventory] = useState(databaseService.getInventory());
-  const [decks, setDecks] = useState(databaseService.getDecks());
-  const [currentDeck, setCurrentDeck] = useState();
+  const [inventory, setInventory] = useState(DBService.getInventory());
+  const [decks, setDecks] = useState(DBService.getDecks());
+  const [isEditingDeck, setIsEditingDeck] = useState(false);
+  const [editingCardList, setEditingCardList] = useState({});
+  const [editingCardInfo, setEditingCardInfo] = useState({});
 
-  const saveDeck = (deckname, deckinfo) => {
-    // setDecks(new Map(decks.set(deckname, deckinfo)));
+  const updateDecks = (decks) => {
+    DBService.updateDecks(decks);
+    setDecks(decks);
+  };
+  const updateInventory = (inventory) => {
+    DBService.updateInventory(inventory);
+    setInventory(inventory);
+  };
+
+  const saveDeck = () => {
+    updateDecks({ ...decks, [editingCardInfo.id]: { ...editingCardInfo, cardList: editingCardList } });
+    setEditingCardInfo({});
+    setEditingCardList({});
+    setIsEditingDeck(false);
+  };
+
+  const loadDeck = (deck) => {
+    setEditingCardInfo({ name: deck.name, id: deck.id });
+    setEditingCardList(deck.cardList);
+    setIsEditingDeck(true);
+  };
+
+  const createNewDeck = () => {
+    let newId =
+      Object.values(decks).length > 0
+        ? Math.max.apply(
+            Math,
+            Object.values(decks).map((deck) => deck.id)
+          ) + 1
+        : 1;
+    setEditingCardInfo({ name: `New Deck`, id: newId });
+    setEditingCardList({});
+    setIsEditingDeck(true);
+  };
+
+  const setCardInCurrentDeck = (cardId, amount) => {
+    setCard(cardId, amount, editingCardList, setEditingCardList);
+  };
+
+  const addCardToCurrentDeck = (cardId) => {
+    addCard(cardId, editingCardList, setEditingCardList);
+  };
+
+  const subCardFromCurrentDeck = (cardId) => {
+    subCard(cardId, editingCardList, setEditingCardList);
   };
 
   const setCardInInventory = (cardId, amount) => {
-    setInventory({ ...inventory, [cardId]: { id: cardId, amount: amount } });
+    setCard(cardId, amount, inventory, updateInventory);
   };
 
-  const addCardInInventory = (cardId) => {
-    setInventory({ ...inventory, [cardId]: { id: cardId, amount: inventory[cardId] ? inventory[cardId].amount + 1 : 1 } });
+  const addCardToInventory = (cardId) => {
+    addCard(cardId, inventory, updateInventory);
   };
 
-  const subCardInInventory = (cardId) => {
-    let card = inventory[cardId];
+  const subCardFromInventory = (cardId) => {
+    subCard(cardId, inventory, updateInventory);
+  };
+
+  const setCard = (cardId, amount, targetList, setState) => {
+    setState({ ...targetList, [cardId]: { id: cardId, amount: amount } });
+  };
+
+  const addCard = (cardId, targetList, setState) => {
+    setState({ ...targetList, [cardId]: { id: cardId, amount: targetList[cardId] ? targetList[cardId].amount + 1 : 1 } });
+  };
+
+  const subCard = (cardId, targetList, setState) => {
+    let card = targetList[cardId];
 
     if (card)
-      if (card.amount > 1) setInventory({ ...inventory, [cardId]: { id: cardId, amount: inventory[cardId].amount - 1 } });
+      if (card.amount > 1) setState({ ...targetList, [cardId]: { id: cardId, amount: targetList[cardId].amount - 1 } });
       else {
-        let { [cardId]: deleted, ...newInventory } = inventory;
-        setInventory(newInventory);
+        let { [cardId]: deleted, ...newList } = targetList;
+        setState(newList);
       }
   };
-
-  // const setCardInInventory = (cardId, amount) => {
-  //   if (inventory.find((card) => card.Id === cardId))
-  //     setInventory(inventory.map((card) => (card.Id === cardId ? { ...card, amount: amount } : card)));
-  //   else setInventory(inventory.concat({ Id: cardId, amount: amount }));
-  // };
-
-  // const addCardInInventory = (cardId) => {
-  //   if (inventory.find((card) => card.Id === cardId))
-  //     setInventory(inventory.map((card) => (card.Id === cardId ? { ...card, amount: card.amount + 1 } : card)));
-  //   else setInventory(inventory.concat({ Id: cardId, amount: 1 }));
-  // };
-
-  // const subCardInInventory = (cardId) => {
-  //   let card = inventory.find((card) => card.Id === cardId);
-
-  //   if (card)
-  //     if (card.amount > 1) setInventory(inventory.map((card) => (card.Id === cardId ? { ...card, amount: card.amount - 1 } : card)));
-  //     else setInventory(inventory.filter((card) => card.Id !== cardId));
-  // };
 
   return (
     <DatabaseContext.Provider
@@ -89,12 +143,20 @@ export const DatabaseProvider = (props) => {
         cryptCards,
         inventory,
         setCardInInventory,
-        addCardInInventory,
-        subCardInInventory,
+        addCardToInventory,
+        subCardFromInventory,
         decks,
         saveDeck,
-        currentDeck,
-        setCurrentDeck,
+        loadDeck,
+        isEditingDeck,
+        editingCardList,
+        setEditingCardList,
+        editingCardInfo,
+        setEditingCardInfo,
+        createNewDeck,
+        setCardInCurrentDeck,
+        addCardToCurrentDeck,
+        subCardFromCurrentDeck,
       ]}
     >
       {props.children}
