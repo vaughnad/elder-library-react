@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useDatabase } from "../hooks";
+import { Table, Button, Container, Row, Col } from "react-bootstrap";
 
 export const Inventory = () => {
   const { addCardToInventory, subCardFromInventory, inventory, cryptCards, libraryCards } = useDatabase();
@@ -24,56 +25,82 @@ export const Inventory = () => {
   }, [inventory, libraryCards, showAllCards]);
 
   return (
-    <React.Fragment>
-      <button onClick={() => setShowAllCards(!showAllCards)}>Show All Cards: {String(showAllCards)}</button>
-      <button onClick={() => setShowCryptCards(!showCryptCards)}>Showing {showCryptCards ? "Crypt" : "Library"}</button>
-      {showCryptCards && (
-        <table>
-          <thead>
-            <tr>
-              <th>Crypt Cards</th>
-              <th>Amount</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredCryptList.map((card) => (
-              <tr key={card.id}>
-                <td>
-                  <button onClick={() => addCardToInventory(card.id)}>+</button>
-                  <button onClick={() => subCardFromInventory(card.id)}>-</button>
-                </td>
-                <td>{card.amount}</td>
-                <td>{card.name}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <Container>
+      <Row>
+        <Col>
+          <Button variant="primary" onClick={() => setShowAllCards(!showAllCards)}>
+            Show All Cards: {String(showAllCards)}
+          </Button>
+        </Col>{" "}
+      </Row>
 
-      {!showCryptCards && (
-        <table>
-          <thead>
-            <tr>
-              <th>Library Cards</th>
-              <th>Amount</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredLibraryList.map((card) => (
-              <tr key={card.id}>
-                <td>
-                  <button onClick={() => addCardToInventory(card.id)}>+</button>
-                  <button onClick={() => subCardFromInventory(card.id)}>-</button>
-                </td>
-                <td>{card.amount}</td>
-                <td>{card.name}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </React.Fragment>
+      <Row>
+        {/* <Button variant="primary" onClick={() => setShowCryptCards(!showCryptCards)}>
+        Showing {showCryptCards ? "Crypt" : "Library"}
+      </Button> */}
+        <Col>
+          {/* {showCryptCards && ( */}
+          <div style={{ height: "calc(100vh - 100px)", overflow: "scroll" }}>
+            <Table striped borderless>
+              <thead style={{ position: "sticky", top: 0, backgroundColor: "#dfabab" }}>
+                <tr>
+                  <th>Crypt Cards</th>
+                  <th>Amount</th>
+                  <th>Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCryptList.map((card) => (
+                  <tr key={card.id}>
+                    <td>
+                      <Button variant="secondary" onClick={() => addCardToInventory(card.id)}>
+                        +
+                      </Button>
+                      <Button variant="secondary" onClick={() => subCardFromInventory(card.id)}>
+                        -
+                      </Button>
+                    </td>
+                    <td>{card.amount}</td>
+                    <td>{card.name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+          {/* )} */}
+        </Col>
+        <Col>
+          {/* {!showCryptCards && ( */}
+          <div style={{ height: "calc(100vh - 100px)", overflow: "scroll" }}>
+            <Table striped borderless>
+              <thead style={{ position: "sticky", top: 0, backgroundColor: "#dfabab" }}>
+                <tr>
+                  <th>Library Cards</th>
+                  <th>Amount</th>
+                  <th>Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredLibraryList.map((card) => (
+                  <tr key={card.id}>
+                    <td>
+                      <Button variant="secondary" onClick={() => addCardToInventory(card.id)}>
+                        +
+                      </Button>
+                      <Button variant="secondary" onClick={() => subCardFromInventory(card.id)}>
+                        -
+                      </Button>
+                    </td>
+                    <td>{card.amount}</td>
+                    <td>{card.name}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+          {/* )} */}
+        </Col>
+      </Row>
+    </Container>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useDatabase } from "../hooks";
+import { Table, Button, Container, Row, Col } from "react-bootstrap";
 
 export const DeckBuilderPage = () => {
   const { decks, isEditingDeck, setEditingCardInfo, editingCardInfo, editingCardList, createNewDeck, saveDeck, loadDeck, cryptCards, libraryCards } =
@@ -35,68 +36,74 @@ export const DeckBuilderPage = () => {
   }, [isEditingDeck, editingCardList, libraryCards]);
 
   return (
-    <React.Fragment>
-      <button onClick={() => createNewDeck()}>New Deck</button>
-
-      <h3>Decks:</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {deckList.map((deck) => (
-            <tr key={deck.id}>
-              <td onClick={() => loadDeck(deck)}>{deck.name}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {isEditingDeck && (
-        <div>
-          <button onClick={() => saveDeck()}>Save Deck</button>
-          <h3>Editing Deck: </h3>{" "}
-          <input
-            className="form-control"
-            type="text"
-            value={editingCardInfo.name}
-            onChange={(e) => setEditingCardInfo({ ...editingCardInfo, name: e.target.value })}
-          />
-          <table>
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Crypt Card Name</th>
-              </tr>
-            </thead>
+    <Container>
+      <Row>
+        <Col>
+          <h3>Decks:</h3>
+          <Table striped borderless>
             <tbody>
-              {currentDeckCryptList.map((card) => (
-                <tr key={card.id}>
-                  <td>{card.amount}</td>
-                  <td>{card.name}</td>
+              {deckList.map((deck) => (
+                <tr key={deck.id}>
+                  <td onClick={() => loadDeck(deck)}>{deck.name}</td>
                 </tr>
               ))}
             </tbody>
-          </table>
-          <table>
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Library Card Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentDeckLibraryList.map((card) => (
-                <tr key={card.id}>
-                  <td>{card.amount}</td>
-                  <td>{card.name}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </React.Fragment>
+          </Table>
+          <Button onClick={() => createNewDeck()}>New Deck</Button>
+        </Col>
+        <Col>
+          {isEditingDeck && (
+            <div>
+              <h3>Editing Deck: </h3>{" "}
+              <input
+                className="form-control"
+                type="text"
+                value={editingCardInfo.name}
+                onChange={(e) => setEditingCardInfo({ ...editingCardInfo, name: e.target.value })}
+              />
+              <Table striped>
+                <thead>
+                  <tr>
+                    <th>Amount</th>
+                    <th>Crypt Card Name</th>
+                    <th>Cap</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentDeckCryptList.map((card) => (
+                    <tr key={card.id}>
+                      <td>{card.amount}</td>
+                      <td>{card.name}</td>
+                      <td>{card.capacity}</td>
+                      <td>{card.disciplines}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <Table striped>
+                <thead>
+                  <tr>
+                    <th>Amount</th>
+                    <th>Library Card Name</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentDeckLibraryList.map((card) => (
+                    <tr key={card.id}>
+                      <td>{card.amount}</td>
+                      <td>{card.name}</td>
+                      <td>{card.types}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <Button onClick={() => saveDeck()}>Save Deck</Button>
+            </div>
+          )}
+        </Col>
+      </Row>
+    </Container>
   );
 };

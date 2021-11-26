@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { useDatabase } from "../hooks";
 import { CardViewer } from "./CardViewer";
+import { Table, Button } from "react-bootstrap";
+// import { Table, Typography } from "antd";
 
 export const CryptCardList = ({ cards, filter }) => {
   const { addCardToInventory, subCardFromInventory, inventory, isEditingDeck, editingCardList, addCardToCurrentDeck, subCardFromCurrentDeck } =
@@ -18,11 +20,14 @@ export const CryptCardList = ({ cards, filter }) => {
 
   const [displayedCard, setDisplayedCard] = useState();
 
+  //cryptDisplayOptions
+  const cryptDisplayOptions = { title: true, group: true, cartText: true, set: false, artist: false };
+
   return (
     <div>
-      <div style={{ width: "calc(100% - 360px)", height: "calc(100vh - 190px)", display: "inline-block", overflow: "scroll" }}>
-        <table>
-          <thead>
+      <div style={{ width: "calc(100% - 360px)", height: "calc(100vh - 100px)", display: "inline-block", overflow: "scroll" }}>
+        <Table striped borderless>
+          <thead style={{ position: "sticky", top: 0, backgroundColor: "#dfabab" }}>
             <tr>
               <th>Inventory</th>
               {isEditingDeck && <th>Current Deck</th>}
@@ -30,41 +35,49 @@ export const CryptCardList = ({ cards, filter }) => {
               <th>Capacity</th>
               <th>Disciplines</th>
               <th>Clan</th>
-              <th>Title</th>
-              <th>Group</th>
-              <th>CardText</th>
-              <td>Set</td>
-              <th>Artist</th>
+              {cryptDisplayOptions.title && <th>Title</th>}
+              {cryptDisplayOptions.group && <th>Group</th>}
+              {cryptDisplayOptions.cartText && <th>CardText</th>}
+              {cryptDisplayOptions.set && <th>Set</th>}
+              {cryptDisplayOptions.artist && <th>Artist</th>}
             </tr>
           </thead>
           <tbody>
             {cardsFiltered.map((card) => (
               <tr key={card.id} onMouseEnter={() => setDisplayedCard(card)}>
                 <td>
-                  <button onClick={() => addCardToInventory(card.id)}>+</button>
+                  <Button variant="secondary" onClick={() => addCardToInventory(card.id)}>
+                    +
+                  </Button>
                   {card.inventoryAmount}
-                  <button onClick={() => subCardFromInventory(card.id)}>-</button>
+                  <Button variant="secondary" onClick={() => subCardFromInventory(card.id)}>
+                    -
+                  </Button>
                 </td>
                 {isEditingDeck && (
                   <td>
-                    <button onClick={() => addCardToCurrentDeck(card.id)}>+</button>
+                    <Button variant="secondary" onClick={() => addCardToCurrentDeck(card.id)}>
+                      +
+                    </Button>
                     {card.deckAmount}
-                    <button onClick={() => subCardFromCurrentDeck(card.id)}>-</button>
+                    <Button variant="secondary" onClick={() => subCardFromCurrentDeck(card.id)}>
+                      -
+                    </Button>
                   </td>
                 )}
                 <td>{card.displayName}</td>
                 <td>{card.capacity}</td>
                 <td>{card.disciplines}</td>
                 <th>{card.clan}</th>
-                <td>{card.title}</td>
-                <td>{card.group}</td>
-                <td>{card.cardText}</td>
-                <td>{card.set}</td>
-                <td>{card.artist}</td>
+                {cryptDisplayOptions.title && <td>{card.title}</td>}
+                {cryptDisplayOptions.group && <td>{card.group}</td>}
+                {cryptDisplayOptions.cartText && <td>{card.cardTextTrim}</td>}
+                {cryptDisplayOptions.set && <td>{card.set}</td>}
+                {cryptDisplayOptions.artist && <td>{card.artist}</td>}
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
       <div style={{ width: "360px", display: "inline-flex", position: "fixed" }}>{displayedCard !== null && <CardViewer card={displayedCard} />}</div>
     </div>

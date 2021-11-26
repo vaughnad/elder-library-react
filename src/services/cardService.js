@@ -14,6 +14,7 @@ export const getCrypt = () => {
       disciplines: card.Disciplines,
       disciplinesList: card.Disciplines.split(" "),
       cardText: card.CardText,
+      cardTextTrim: getTrimmedText(card.CardText, 120),
       set: card.Set,
       title: card.Title,
       banned: card.Banned !== "",
@@ -41,7 +42,9 @@ export const getLibrary = () => {
       costType: costs.type,
       burnOption: card.BurnOption === "Y",
       cardText: card.CardText,
+      cardTextTrim: getTrimmedText(card.CardText, 120),
       flavorText: card.FlavorText,
+      flavorTextTrim: getTrimmedText(card.FlavorText, 35),
       set: card.Set,
       banned: card.Banned !== "",
       artist: card.Artist,
@@ -68,7 +71,11 @@ const getCost = (card) => {
 };
 
 const getDisplayName = (card) => {
-  return card.name + (card.Adv === "Advanced" ? " (ADV)" : "");
+  return card.Name + (card.Adv === "Advanced" ? " (ADV)" : "");
+};
+
+const getTrimmedText = (text, length = 50) => {
+  return text.length > length ? text.substring(0, length - 3) + "..." : text;
 };
 
 const getImageName = (card) => {
